@@ -34,7 +34,18 @@
           <h1>
 <a name="neurobattery" class="anchor" href="#neurobattery"><span class="octicon octicon-link"></span></a>NeuroBattery</h1>
 
-<p>Example of processing multiple MR image types for a single subject</p>
+<p>Example of how to use ANTs to process multiple MR image types for a single subject. Here we provide input data for a single subject for which 5 different images were acquired in a single session: MPRAGE, pseudo continuous arterial spin labeling (PCASL), diffusion weighted/tensor, magnetization transfer, and resting state BOLD. Additionally we provide a template and associated labels/priors that we use as an anatomical basis for processing.</p>
+
+<p>The processing consists of the following</p>
+
+<h1>
+<a name="t1-mprage" class="anchor" href="#t1-mprage"><span class="octicon octicon-link"></span></a>T1 (MPRAGE)</h1>
+
+<ol>
+<li>Brain extraction</li>
+<li>4-tissue segmentation</li>
+<li>Measurement of cortical thickness</li>
+</ol>
         </section>
 
         <footer>
