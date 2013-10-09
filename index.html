@@ -47,10 +47,14 @@
 <h2>
 <a name="t1-mprage-image-processing" class="anchor" href="#t1-mprage-image-processing"><span class="octicon octicon-link"></span></a>T1 (MPRAGE) image processing</h2>
 
+<p>A number of useful outputs are generated, including:</p>
+
 <ol>
-<li>Brain extraction mask</li>
+<li>Bias corrected version of input image via N4</li>
+<li>Brain extraction mask (cerebrum)</li>
 <li>4-tissue segmentation (CSF,white matter, cortex, and deep gray matter)</li>
 <li>Cortical thickness</li>
+<li>Spatial transform to template space (and inverse transform)</li>
 </ol><p>In the script directory, <code>process_t1.sh</code> provides an example call to <code>antsCorticalThickness.sh</code> which is used to achieve the steps listed above. The full command is:</p>
 
 <blockquote>
