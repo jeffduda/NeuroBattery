@@ -55,19 +55,19 @@
 <h2>
 <a name="t1-mprage-image-processing" class="anchor" href="#t1-mprage-image-processing"><span class="octicon octicon-link"></span></a>T1 (MPRAGE) image processing</h2>
 
-<p>Here are some sample slices from the provided T1 input data</p>
+<p>Here are some sample slices from the provided T1 input data (<code>data/input/PEDS012/20121031/Anatomy/PEDS012_20121031_mprage_t1.nii.gz</code>)</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_coronal.png?raw=true" alt="Full C"></p>
 
-<p>And here are some sample slices from the provided T1 template that will be used as an anatomical reference</p>
+<p>And here are some sample slices from the provided T1 template that will be used as an anatomical reference (<code>data/template/T_template.nii.gz</code>)</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_coronal.png?raw=true" alt="Full C"></p>
 
-<p>A brainmask of the template will help extract the brain from the input</p>
+<p>A brainmask of the template will help extract the brain from the input (<code>data/template/T_templateProbabilityMask.nii.gz</code>)</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_coronal.png?raw=true" alt="Full C"></p>
 
-<p>And tissue priors in the template will help segment the input data. Red=CSF, Green=Cortex, Blue=White matter, and Yellow=Deep gray matter</p>
+<p>And tissue priors in the template will help segment the input data. Red=CSF, Green=Cortex, Blue=White matter, and Yellow=Deep gray matter (<code>data/template/Priors/priors%d.nii.gz</code>)</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_coronal.png?raw=true" alt="Full C"></p>
 
