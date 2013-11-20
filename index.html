@@ -1,44 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>NeuroBattery by jeffduda</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="NeuroBattery : Smashing through the boundaries - of current neuroimage analysis limitations" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>NeuroBattery</title>
   </head>
+
   <body>
 
-      <header>
-        <h1>NeuroBattery</h1>
-        <p>Smashing through the boundaries - of current neuroimage analysis limitations</p>
-      </header>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/jeffduda/NeuroBattery">View on GitHub</a>
 
-      <div id="banner">
-        <span id="logo"></span>
+          <h1 id="project_title">NeuroBattery</h1>
+          <h2 id="project_tagline">Smashing through the boundaries - of current neuroimage analysis limitations</h2>
 
-        <a href="https://github.com/jeffduda/NeuroBattery" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/jeffduda/NeuroBattery/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/jeffduda/NeuroBattery/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/jeffduda/NeuroBattery/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/jeffduda/NeuroBattery/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <h1>
 <a name="neurobattery" class="anchor" href="#neurobattery"><span class="octicon octicon-link"></span></a>NeuroBattery</h1>
 
@@ -55,11 +47,7 @@
 <h2>
 <a name="t1-mprage-image-processing" class="anchor" href="#t1-mprage-image-processing"><span class="octicon octicon-link"></span></a>T1 (MPRAGE) image processing</h2>
 
-<p>Here are some sample slices from the provided T1 input data (<code>data/input/PEDS012/20121031/Anatomy/PEDS012_20121031_mprage_t1.nii.gz</code>)</p>
-
-<p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_coronal.png?raw=true" alt="Full C"></p>
-
-<p>And here are some sample slices from the provided T1 template that will be used as an anatomical reference (<code>data/template/T_template.nii.gz</code>)</p>
+<p>A template image along with associated tissue-type priors serves as the reference for a registration-based approach to processing of the T1 subject data. Below are some example illustrations of the included template (<code>data/template/T_template.nii.gz</code>).</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_coronal.png?raw=true" alt="Full C"></p>
 
@@ -71,7 +59,7 @@
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_coronal.png?raw=true" alt="Full C"></p>
 
-<p>These images, along with provided masks and priors will be used to generate a number of useful outputs, including:</p>
+<p>These images, along with subject T1 data are used to generate a number of useful outputs, including:</p>
 
 <ol>
 <li>Bias corrected version of input image via N4</li>
@@ -91,8 +79,16 @@
    -k 1 \<br>
    -n 3 \<br>
    -w 0.25 \<br>
-   -o ../data/output/PEDS012/20121031/PEDS012_20121031_  </p>
+   -o ../data/output/PEDS012/20121031/PEDS012_20121031_ </p>
 </blockquote>
+
+<p>Here are some sample slices from the provided T1 input data (<code>data/input/PEDS012/20121031/Anatomy/PEDS012_20121031_mprage_t1.nii.gz</code>) followed by the results provided by <code>antsCorticalThickness.sh</code>.</p>
+
+<p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1_coronal.png?raw=true" alt="Full C"></p>
+
+<p>The exctracted cerebrum image:</p>
+
+<p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1brain_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1brain_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1brain_coronal.png?raw=true" alt="Full C"></p>
 
 <p>Having processed the T1 image, we want to continue to use this data as our anatomical frame-of-reference. The processing of the additional data will all follow a similar pattern:</p>
 
@@ -117,12 +113,17 @@
 
 <p><strong>We create the Battery</strong></p>
       </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/jeffduda">jeffduda</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">NeuroBattery maintained by <a href="https://github.com/jeffduda">jeffduda</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
     
+
   </body>
 </html>
