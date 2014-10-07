@@ -40,22 +40,23 @@
 <li>T1 (MPRAGE)</li>
 <li>pseudo continuous arterial spin labeling (PCASL)</li>
 <li>diffusion weighted/tensor</li>
-<li>magnetization transfer</li>
 <li>resting state BOLD</li>
 </ol><p>Additionally we provide a template and associated labels &amp; priors that we use as an anatomical basis for processing as well as a set of verified output image to ensure that your version is working correctly. The general concept is to use the anatomical information in the T1 images as a spatial frame-of-reference. Accordingly we find a spatial mapping between each subject's T1 image and the T1 template. Later, for additional MR images, we will perform intra subject alignment to the T1 allowing for mapping to template space by composing multiple transforms and retaining the concept of relying on the T1 images for anatomical reference for both intra and inter subject exploration of the data. After aligning the T1 image to the template we generate various images relating to anatomical properties of the brain. </p>
 
 <h2>
 <a name="t1-mprage-image-processing" class="anchor" href="#t1-mprage-image-processing"><span class="octicon octicon-link"></span></a>T1 (MPRAGE) image processing</h2>
 
-<p>A template image along with associated tissue-type priors serves as the reference for a registration-based approach to processing of the T1 subject data. Below are some example illustrations of the included template (<code>data/template/T_template.nii.gz</code>).</p>
+<p>A template image along with associated tissue-type priors serves as the reference for a registration-based approach to processing of the T1 subject data. Below are some example illustrations of the included template (<code>data/template/PTBP/PTBP_T1_Defaced.nii.gz</code>).</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_coronal.png?raw=true" alt="Full C"></p>
 
-<p>A brain mask of the template will help extract the brain from the input (<code>data/template/T_templateProbabilityMask.nii.gz</code>)</p>
+<p>An extraction mask of the template will help extract the brain from the input (<code>data/template/PTBP/PTBP_T1_ExtractionMask.nii.gz</code>). This is used to limit the area examined for an initial whole head registration between subject and template.</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_coronal.png?raw=true" alt="Full C"></p>
 
-<p>And tissue priors in the template will help segment the input data. Red=CSF, Green=Cortex, Blue=White matter, and Yellow=Deep gray matter (<code>data/template/Priors/priors%d.nii.gz</code>)</p>
+<p>A brain mask of the template is transformed to subject space for brain extration (<code>data/template/PTBP/PTBP_T1_BrainCerebellumProbabilityMask.nii.gz</code>)</p>
+
+<p>Tissue priors in the template will help segment the input data. Red=CSF, Green=Cortex, Blue=White matter, and Yellow=Deep gray matter, X=Brain stem, Y=Cerebellum (<code>data/template/PTBP/Priors/priors%d.nii.gz</code>)</p>
 
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_axial.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_sagittal.png?raw=true" alt="Full C"><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_prior_coronal.png?raw=true" alt="Full C"></p>
 
@@ -64,22 +65,23 @@
 <ol>
 <li>Bias corrected version of input image via N4</li>
 <li>Brain extraction mask (cerebrum)</li>
-<li>4-tissue segmentation (CSF,white matter, cortex, and deep gray matter)</li>
+<li>6-tissue segmentation (CSF,white matter, cortex, deep gray matter, brainstem, and cerebellum)</li>
 <li>Cortical thickness</li>
 <li>Spatial transform to template space (and inverse transform)</li>
-</ol><p>In the script directory, <code>process_t1.sh</code> provides an example call to <code>antsCorticalThickness.sh</code> which is used to achieve the steps listed above. The full command is:</p>
+</ol><p>In the script directory, <code>process_t1.sh</code> provides an example call to <code>antsCorticalThickness.sh</code> which is used to achieve the steps listed above. For this to work, the ANTSPATH environment variable must be set to point to ANTs executables and scripts. The full command is:</p>
 
 <blockquote>
-<p>sh  antsCorticalThickness.sh -d 3 \<br>
-   -a ../data/input/PEDS012/20121031/Anatomy/PEDS012_20121031_mprage_t1.nii.gz \<br>
-   -e ../data/template/T_template.nii.gz \<br>
-   -m ../data/template/T_templateProbabilityMask.nii.gz \<br>
-   -p ../data/template/Priors/priors%d.nii.gz \<br>
-   -t ../data/template/T_template.nii.gz \<br>
-   -k 1 \<br>
-   -n 3 \<br>
-   -w 0.25 \<br>
-   -o ../data/output/PEDS012/20121031/PEDS012_20121031_ </p>
+<p>sh  ${ANTSPATH}/antsCorticalThickness.sh -d 3 \
+-a ../data/input/PEDS012/20131101/Anatomy/PEDS012_20131101_mprage_t1.nii.gz \
+-e ../data/template/PTBP/PTBP_T1_Defaced.nii.gz \
+-m ../data/template/PTBP/PTBP_T1_BrainCerebellumProbabilityMask.nii.gz \
+-f ../data/template/PTBP/PTBP_T1_ExtractionMask \
+-p ../data/template/PTBP/Priors/priors%d.nii.gz \
+-t ../data/template/PTBP/PTBP_T1_BrainCerebellum.nii.gz \
+-k 1 \
+-n 3 \
+-w 0.25 \
+-o ../data/output/PEDS012/20131101/PEDS012_20131101_</p>
 </blockquote>
 
 <p>Here are some sample slices from the provided T1 input data (<code>data/input/PEDS012/20121031/Anatomy/PEDS012_20121031_mprage_t1.nii.gz</code>) followed by the results provided by <code>antsCorticalThickness.sh</code>.</p>
@@ -168,9 +170,6 @@
 
 <h2>
 <a name="resting-bold-fmri-processing" class="anchor" href="#resting-bold-fmri-processing"><span class="octicon octicon-link"></span></a>Resting BOLD fMRI processing</h2>
-
-<h2>
-<a name="magnetization-transfer-processing" class="anchor" href="#magnetization-transfer-processing"><span class="octicon octicon-link"></span></a>Magnetization transfer processing</h2>
 
 <p><strong>Whipping up a fury, Dominating flurry</strong></p>
 
