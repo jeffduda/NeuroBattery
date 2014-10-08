@@ -10,6 +10,21 @@ Here we provide a working example that illustrates the use of Advanced Normaliza
 
 Additionally we provide a template and associated labels & priors that we use as an anatomical basis for processing as well as a set of verified output image to ensure that your version is working correctly. The general concept is to use the anatomical information in the T1 images as a spatial frame-of-reference. Accordingly we find a spatial mapping between each subject's T1 image and the T1 template. Later, for additional MR images, we will perform intra subject alignment to the T1 allowing for mapping to template space by composing multiple transforms and retaining the concept of relying on the T1 images for anatomical reference for both intra and inter subject exploration of the data. After aligning the T1 image to the template we generate various images relating to anatomical properties of the brain. 
 
+Getting Started
+----------------
+
+0. clone this repository and make sure you have R and its ggplot2 and rmarkdown libraries installed
+
+1. install [ANTs](http://stnava.github.io/ANTs/),  [ANTsR](http://stnava.github.io/ANTsR/) and [pipedream](https://github.com/cookpa/pipedream) as described on their respective pages
+
+2. cd into Neurobattery/scripts/
+
+3. type  bash ./run_test.sh  and then wait for the test to finish.
+
+4. if the test succeeds, then great.  now you can inspect both scripts and results and see how to do this yourself.
+
+Additional information below.
+
 T1 (MPRAGE) image processing
 ------------------------
 A template image along with associated tissue-type priors serves as the reference for a registration-based approach to processing of the T1 subject data. Below are some example illustrations of the included template (`data/template/PTBP/PTBP_T1_Defaced.nii.gz`).
