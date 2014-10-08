@@ -1,0 +1,6 @@
+# processed data
+data/output/PEDS012
+data/input/PEDS012/20131101/DTI
+docs/*.pdf
+*.*~
+*.fuse_hidden*
