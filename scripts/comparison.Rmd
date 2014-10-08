@@ -1,0 +1,322 @@
+---
+title: "Comparison of ANTs based pipeline processing to reference results"
+output: pdf_document
+---
+
+# Objective
+What is this doing
+
+```{r fig.width=8, fig.height=4, echo=FALSE}
+if ( exists("test.location") && exists("gold.location") ) {
+  print(paste("Testing directory:", test.location))
+  print(paste("Reference directory: ", gold.location))
+  }  else {
+  print( "Need to set test.location and gold.location variables" )
+  }
+  
+```
+
+# Brain extraction comparison
+```{r fig.width=8, fig.height=4, echo=FALSE}
+suppressMessages(library(ANTsR))
+library(ggplot2)
+if ( exists("test.location") && exists("gold.location") ) {
+
+  mask.glob = glob2rx("*BrainExtractionMask.nii.gz")
+  mask.test = list.files(path=test.location, recursive=T, full.names=T, pattern=mask.glob)[1]
+  mask.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=mask.glob)[1]
+
+  mask.test = antsImageRead(mask.test, 3)
+  mask.gold = antsImageRead(mask.gold, 3)
+    
+  bvol.test = length(which(as.array(mask.test)>0))*prod(antsGetSpacing(mask.test))
+  bvol.gold = length(which(as.array(mask.gold)>0))*prod(antsGetSpacing(mask.gold))
+  bvol.change = abs(bvol.test - bvol.gold) / bvol.gold
+
+  mask.test = as.array(mask.test)
+  mask.gold = as.array(mask.gold)  
+  bvol.overlap = length(which(mask.test*mask.gold > 0 ))
+  bvol.sum = length(which(mask.test>0))
+  bvol.sum = bvol.sum + length(which(mask.gold>0))
+ 
+ 
+  print(paste("Brain volume (test):", bvol.test))
+  print(paste("Brain volume (gold):", bvol.gold))
+  print(paste("Brain volume change %", bvol.change))
+  print(paste("Brain mask DICE:", 2.0*bvol.overlap / bvol.sum))
+  
+  } else {
+  print( "Need to set test.location and gold.location variables" )
+  }
+  
+```
+
+# Brain segmentation
+```{r fig.width=8, fig.height=4, echo=FALSE}
+suppressMessages(library(ANTsR))
+library(ggplot2)
+seg.names = c("CSF", "Cortex", "White matter", "Deep Gray", "BrainStem", "Cerebellum")
+if ( exists("test.location") && exists("gold.location") ) {
+
+  seg.glob = glob2rx("*BrainSegmentation.nii.gz")
+  seg.test = list.files(path=test.location, recursive=T, full.names=T, pattern=seg.glob)[1]
+  seg.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=seg.glob)[1]
+
+  seg.test = antsImageRead(seg.test, 3)
+  seg.gold = antsImageRead(seg.gold, 3)
+  
+  test.values = rep(0,6)
+  gold.values = rep(0,6)
+    
+  for ( i in c(1:6) ) {
+    print( paste("Checking Label:", i, seg.names[i] ))
+    
+    vol.test = length(which(as.array(seg.test)==i))*prod(antsGetSpacing(seg.test))
+    vol.gold = length(which(as.array(seg.gold)==i))*prod(antsGetSpacing(seg.gold))
+    vol.change = abs(vol.test - vol.gold) / vol.gold
+
+    mask.test = as.array(seg.test)
+    mask.gold = as.array(seg.gold)  
+    mask.test[ mask.test != i ] = 0
+    mask.test[ mask.test == i] = 1
+    mask.gold[ mask.gold != i ] = 0
+    mask.gold[ mask.gold == i] = 1
+        
+    mask.overlap = length(which(mask.test*mask.gold>0))
+    mask.sum = length(which(mask.test>0))
+    mask.sum = mask.sum + length(which(mask.gold>0))
+ 
+    print(paste("Volume (test):", vol.test))
+    print(paste("Volume (gold):", vol.gold))
+    print(paste("Volume change %", vol.change))
+    print(paste("Volume DICE:", 2.0*mask.overlap / mask.sum))
+    print( " " )
+    
+    test.values[i] = vol.test
+    gold.values[i] = vol.gold
+
+    }
+
+  dat = data.frame( Volume=c(test.values, gold.values) )
+  dat = data.frame(dat, Cohort=c(rep("Test",6),rep("Gold",6)) )
+  dat = data.frame(dat, Tissue=rep(seg.names,2) )
+  dat$Cohort = as.factor(dat$Cohort)
+  dat$Tissue = as.factor(dat$Tissue)
+  segPlot = ggplot( dat, aes(x=Tissue, y=Volume, group=Cohort, colour=Cohort))
+  segPlot = segPlot + geom_line() + geom_point()
+  print(segPlot)
+  
+  } else {
+  print( "Need to set test.location and gold.location variables" )
+  }
+  
+```
+
+Cortical Thickness
+------------------
+```{r fig.width=8, fig.height=4, echo=FALSE}
+suppressMessages(library(ANTsR))
+library(ggplot2)
+if ( exists("test.location") && exists("gold.location") ) {
+
+  thick.glob = glob2rx("*CorticalThickness.nii.gz")
+  thick.test = list.files(path=test.location, recursive=T, full.names=T, pattern=thick.glob)[1]
+  thick.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=thick.glob)[1]
+
+  thick.test = as.array(antsImageRead(thick.test, 3))
+  thick.gold = as.array(antsImageRead(thick.gold, 3))
+  
+  mask.test = as.array(seg.test)
+  mask.gold = as.array(seg.gold)  
+  mask.test[ mask.test != 2 ] = 0
+  mask.test[ mask.test == 2] = 1
+  mask.gold[ mask.gold != 2 ] = 0
+  mask.gold[ mask.gold == 2] = 1
+
+  mean.test = mean( thick.test[mask.test>0] )
+  mean.gold = mean( thick.gold[mask.gold>0] )
+  mean.change = abs(mean.test-mean.gold)/mean.gold
+  
+  print(paste("Mean cortical thickness (test):", mean.test))
+  print(paste("Mean cortical thickness (gold):", mean.gold))
+  print(paste("Mean cortical thickness change %", mean.change))
+ 
+  } else {
+  print( "Need to set test.location and gold.location variables" )
+  }
+  
+```
+
+
+DTI
+---
+```{r fig.width=8, fig.height=4, echo=FALSE}
+suppressMessages(library(ANTsR))
+library(ggplot2)
+if ( exists("test.location") && exists("gold.location") ) {
+
+  fa.glob = glob2rx("*fa_anatomical.nii.gz")
+  fa.test = list.files(path=test.location, recursive=T, full.names=T, pattern=fa.glob)[1]
+  fa.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=fa.glob)[1]
+
+  fa.test = as.array(antsImageRead(fa.test, 3))
+  fa.gold = as.array(antsImageRead(fa.gold, 3))
+  
+  mask.test = as.array(seg.test)
+  mask.gold = as.array(seg.gold)  
+  mask.test[ mask.test != 3 ] = 0
+  mask.test[ mask.test == 3] = 1
+  mask.gold[ mask.gold != 3 ] = 0
+  mask.gold[ mask.gold == 3] = 1
+
+  mean.test = mean( fa.test[mask.test>0] )
+  mean.gold = mean( fa.gold[mask.gold>0] )
+  mean.change = abs(mean.test-mean.gold)/mean.gold
+  
+  print(paste("Mean fractional anisotropy (test):", mean.test))
+  print(paste("Mean fractional anisotropy (gold):", mean.gold))
+  print(paste("Mean fractional anisotropy change %", mean.change))
+ 
+  } else {
+  print( "Need to set test.location and gold.location variables" )
+  }
+  
+```
+
+PCASL
+-----
+```{r fig.width=8, fig.height=4, echo=FALSE}
+suppressMessages(library(ANTsR))
+library(ggplot2)
+if ( exists("test.location") && exists("gold.location") ) {
+
+  cbf.glob = glob2rx("*meancbf_anatomical.nii.gz")
+  cbf.test = list.files(path=test.location, recursive=T, full.names=T, pattern=cbf.glob)[1]
+  cbf.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=cbf.glob)[1]
+
+  cbf.test = as.array(antsImageRead(cbf.test, 3))
+  cbf.gold = as.array(antsImageRead(cbf.gold, 3))
+  
+  mask.test = as.array(seg.test)
+  mask.gold = as.array(seg.gold)  
+  mask.test[ mask.test != 2 ] = 0
+  mask.test[ mask.test == 2] = 1
+  mask.gold[ mask.gold != 2 ] = 0
+  mask.gold[ mask.gold == 2] = 1
+
+  mean.test = mean( cbf.test[mask.test>0] )
+  mean.gold = mean( cbf.gold[mask.gold>0] )
+  mean.change = abs(mean.test-mean.gold)/mean.gold
+  
+  print(paste("Mean cortical CBF (test):", mean.test))
+  print(paste("Mean cortical CBF (gold):", mean.gold))
+  print(paste("Mean cortical CBF change %", mean.change))
+  
+  mask.test = as.array(seg.test)
+  mask.gold = as.array(seg.gold)  
+  mask.test[ mask.test != 4 ] = 0
+  mask.test[ mask.test == 4] = 1
+  mask.gold[ mask.gold != 4 ] = 0
+  mask.gold[ mask.gold == 4] = 1
+
+  mean.test = mean( cbf.test[mask.test>0] )
+  mean.gold = mean( cbf.gold[mask.gold>0] )
+  mean.change = abs(mean.test-mean.gold)/mean.gold
+  
+  print(paste("Mean deep CBF (test):", mean.test))
+  print(paste("Mean deep CBF (gold):", mean.gold))
+  print(paste("Mean deep CBF change %", mean.change))
+  
+  motion.glob = glob2rx( "*PCASL_MOCOStatsFramewise.csv")
+  motion.test = list.files(path=test.location, recursive=T, full.names=T, pattern=motion.glob)[1]
+  motion.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=motion.glob)[1]
+
+  motion.test = read.csv(motion.test)
+  motion.gold = read.csv(motion.gold)
+  
+  n = dim(motion.gold)[1]-1
+  mean.test = motion.test$Mean[1:n]
+  mean.gold = motion.gold$Mean[1:n]
+  
+  dat = data.frame( Displacement=c(mean.test, mean.gold) )
+    dat = data.frame( dat, Cohort=c(rep("Test",n),rep("Gold",n)) )
+  dat = data.frame( dat, Frame=c(c(1:n),c(1:n)) )
+  motionPlot = ggplot( dat, aes(x=Frame, y=Displacement, group=Cohort, colour=Cohort) )
+  motionPlot = motionPlot + geom_line() + geom_point()
+  print(motionPlot)
+ 
+  } else {
+  print( "Need to set test.location and gold.location variables" )
+  }
+  
+```
+
+BOLD
+----
+```{r fig.width=8, fig.height=4, echo=FALSE}
+suppressMessages(library(ANTsR))
+library(ggplot2)
+if ( exists("test.location") && exists("gold.location") ) {
+
+  bold.glob = glob2rx("*BOLD_anatomical.nii.gz")
+  bold.test = list.files(path=test.location, recursive=T, full.names=T, pattern=bold.glob)[1]
+  bold.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=bold.glob)[1]
+
+  bold.test = as.array(antsImageRead(bold.test, 3))
+  bold.gold = as.array(antsImageRead(bold.gold, 3))
+  
+  mask.test = as.array(seg.test)
+  mask.gold = as.array(seg.gold)  
+  mask.test[ mask.test != 2 ] = 0
+  mask.test[ mask.test == 2] = 1
+  mask.gold[ mask.gold != 2 ] = 0
+  mask.gold[ mask.gold == 2] = 1
+
+  mean.test = mean( bold.test[mask.test>0] )
+  mean.gold = mean( bold.gold[mask.gold>0] )
+  mean.change = abs(mean.test-mean.gold)/mean.gold
+  
+  print(paste("Mean cortical CBF (test):", mean.test))
+  print(paste("Mean cortical CBF (gold):", mean.gold))
+  print(paste("Mean cortical CBF change %", mean.change))
+  
+  mask.test = as.array(seg.test)
+  mask.gold = as.array(seg.gold)  
+  mask.test[ mask.test != 4 ] = 0
+  mask.test[ mask.test == 4] = 1
+  mask.gold[ mask.gold != 4 ] = 0
+  mask.gold[ mask.gold == 4] = 1
+
+  mean.test = mean( bold.test[mask.test>0] )
+  mean.gold = mean( bold.gold[mask.gold>0] )
+  mean.change = abs(mean.test-mean.gold)/mean.gold
+  
+  print(paste("Mean deep BOLD (test):", mean.test))
+  print(paste("Mean deep BOLD (gold):", mean.gold))
+  print(paste("Mean deep BOLD change %", mean.change))
+  
+  motion.glob = glob2rx( "*BOLD_MOCOStatsFramewise.csv")
+  motion.test = list.files(path=test.location, recursive=T, full.names=T, pattern=motion.glob)[1]
+  motion.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=motion.glob)[1]
+ 
+  motion.test = read.csv(motion.test)
+  motion.gold = read.csv(motion.gold)
+  
+  n = dim(motion.gold)[1]-1
+  mean.test = motion.test$Mean[1:n]
+  mean.gold = motion.gold$Mean[1:n]
+  
+  dat = data.frame( Displacement=c(mean.test, mean.gold) )
+    dat = data.frame( dat, Cohort=c(rep("Test",n),rep("Gold",n)) )
+  dat = data.frame( dat, Frame=c(c(1:n),c(1:n)) )
+  motionPlot = ggplot( dat, aes(x=Frame, y=Displacement, group=Cohort, colour=Cohort) )
+  motionPlot = motionPlot + geom_line() + geom_point()
+  print(motionPlot)
+  
+ 
+  } else {
+  print( "Need to set test.location and gold.location variables" )
+  }
+  
+```
+
