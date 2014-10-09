@@ -17,11 +17,13 @@ Getting Started
 
 1. install [ANTs](http://stnava.github.io/ANTs/),  [ANTsR](http://stnava.github.io/ANTsR/) and [pipedream](https://github.com/cookpa/pipedream) as described on their respective pages
 
-2. cd into Neurobattery/scripts/
+2. cd into NeuroBattery/scripts/
 
 3. type `./run_test.sh`  and then wait for the test to finish.
 
-4. if the test succeeds, then great.  now you can inspect both scripts and results and see how to do this yourself.
+4. after processing has finished, the file `NeuroBattery/docs/PEDS012_20131101.pdf will be created. In this file, you will see a variety of measures generated from the results, these number will be compared to a set of reference results provided in NeuroBattery/data/reference/. Small differences ( < 1% ) are to be expected. Larger differences may be a cause of concern.
+
+5. if the test succeeds, then great.  now you can inspect both scripts and results and see how to do this yourself.
 
 Additional information below.
 
