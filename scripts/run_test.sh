@@ -49,6 +49,7 @@ fi
 
 ./process_t1.sh
 ./process_modalities.sh
+./warp_labels.h PEDS012 20131101
 ./run_comparison.R PEDS012 20131101
 
 
