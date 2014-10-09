@@ -19,7 +19,7 @@ Getting Started
 
 2. cd into Neurobattery/scripts/
 
-3. type  bash ./run_test.sh  and then wait for the test to finish.
+3. type `./run_test.sh`  and then wait for the test to finish.
 
 4. if the test succeeds, then great.  now you can inspect both scripts and results and see how to do this yourself.
 
