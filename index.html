@@ -44,6 +44,17 @@
 </ol><p>Additionally we provide a template and associated labels &amp; priors that we use as an anatomical basis for processing as well as a set of verified output image to ensure that your version is working correctly. The general concept is to use the anatomical information in the T1 images as a spatial frame-of-reference. Accordingly we find a spatial mapping between each subject's T1 image and the T1 template. Later, for additional MR images, we will perform intra subject alignment to the T1 allowing for mapping to template space by composing multiple transforms and retaining the concept of relying on the T1 images for anatomical reference for both intra and inter subject exploration of the data. After aligning the T1 image to the template we generate various images relating to anatomical properties of the brain. </p>
 
 <h2>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<ol>
+<li><p>clone this repository and make sure you have R and its ggplot2 and rmarkdown libraries installed</p></li>
+<li><p>install <a href="http://stnava.github.io/ANTs/">ANTs</a>,  <a href="http://stnava.github.io/ANTsR/">ANTsR</a> and <a href="https://github.com/cookpa/pipedream">pipedream</a> as described on their respective pages</p></li>
+<li><p>cd into Neurobattery/scripts/</p></li>
+<li><p>type  bash ./run_test.sh  and then wait for the test to finish.</p></li>
+<li><p>if the test succeeds, then great.  now you can inspect both scripts and results and see how to do this yourself.</p></li>
+</ol><p>Additional information below.</p>
+
+<h2>
 <a name="t1-mprage-image-processing" class="anchor" href="#t1-mprage-image-processing"><span class="octicon octicon-link"></span></a>T1 (MPRAGE) image processing</h2>
 
 <p>A template image along with associated tissue-type priors serves as the reference for a registration-based approach to processing of the T1 subject data. Below are some example illustrations of the included template (<code>data/template/PTBP/PTBP_T1_Defaced.nii.gz</code>).</p>
@@ -166,10 +177,38 @@
 <p><img src="https://github.com/jeffduda/NeuroBattery/blob/master/figures/graph.png?raw=true" alt="Full C"></p>
 
 <h2>
+<a name="diffusion-tensor-reconstruction" class="anchor" href="#diffusion-tensor-reconstruction"><span class="octicon octicon-link"></span></a>Diffusion Tensor Reconstruction</h2>
+
+<p>Diffusion tensor values are calculated from the DWI images using the nii2dt.sh script included with Pipedream. This script is essentially a wrapper that uses ANTs for motion correction and diffusion direction correction and Camino to perform the tensor estimation. This occurs in (<code>process_modalities.sh</code>) with the following command</p>
+
+<blockquote>
+<p>sh ${PIPEDREAMPATH}/nii2dt/nii2dt.sh \
+--dwi ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.nii.gz \
+      ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.nii.gz \
+--bvals ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.bval \
+        ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0019_DTI_1_1x0_30x1000.bval \
+--bvecs ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.bvec \
+        ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0019_DTI_1_1x0_30x1000.bvec \
+--outroot PEDS012_20131101_DTI_ \
+--outdir ../data/input/PEDS012/20131101/DTI</p>
+</blockquote>
+
+<h2>
 <a name="pseudo-continuous-arterial-spin-labeling-pcasl-image-processing" class="anchor" href="#pseudo-continuous-arterial-spin-labeling-pcasl-image-processing"><span class="octicon octicon-link"></span></a>Pseudo continuous arterial spin labeling (PCASL) image processing</h2>
 
 <h2>
 <a name="resting-bold-fmri-processing" class="anchor" href="#resting-bold-fmri-processing"><span class="octicon octicon-link"></span></a>Resting BOLD fMRI processing</h2>
+
+<h2>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<p>ANTs - <a href="https://github.com/stnava/ANTs">https://github.com/stnava/ANTs</a> - 5f9d157cd8afb332c632c6fc35341420c93d031c
+Pipedream - <a href="https://github.com/cookpa/pipedream">https://github.com/cookpa/pipedream</a> - 0125c2ab4dfecabfb7786c43056dc101c1e62af7
+Camino - <a href="http://git.code.sf.net/p/camino/code">http://git.code.sf.net/p/camino/code</a> - 1b0935692fdc324d1325fcdb073e65fe057980ed
+gdcm - <a href="http://git.code.sf.net/p/gdcm/gdcm">http://git.code.sf.net/p/gdcm/gdcm</a> -  7b2f37e5e51ed7cab1fc74438cb00800af85a3db
+dcm2nii -  <a href="http://www.nitrc.org/frs/shownotes.php?release_id=2291">http://www.nitrc.org/frs/shownotes.php?release_id=2291</a> - 6/2013
+java 1.7.0_13
+cmake 2.8.12.1</p>
 
 <p><strong>Whipping up a fury, Dominating flurry</strong></p>
 
