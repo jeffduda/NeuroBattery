@@ -276,9 +276,9 @@ if ( exists("test.location") && exists("gold.location") ) {
   mean.gold = mean( bold.gold[mask.gold>0] )
   mean.change = abs(mean.test-mean.gold)/mean.gold
   
-  print(paste("Mean cortical CBF (test):", mean.test))
-  print(paste("Mean cortical CBF (gold):", mean.gold))
-  print(paste("Mean cortical CBF change %", mean.change))
+  print(paste("Mean cortical BOLD (test):", mean.test))
+  print(paste("Mean cortical BOLD (gold):", mean.gold))
+  print(paste("Mean cortical BOLD change %", mean.change))
   
   mask.test = as.array(seg.test)
   mask.gold = as.array(seg.gold)  
