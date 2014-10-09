@@ -208,7 +208,7 @@ Pipedream - https://github.com/cookpa/pipedream - 0125c2ab4dfecabfb7786c43056dc1
 
 Camino - http://git.code.sf.net/p/camino/code - 1b0935692fdc324d1325fcdb073e65fe057980ed
 
-gdcm - http://sourceforge.net/p/gdcm/gdcm/ci/master/tree/ -  7b2f37e5e51ed7cab1fc74438cb00800af85a3db
+gdcm -  https://sourceforge.net/p/gdcm/gdcm/ -  7b2f37e5e51ed7cab1fc74438cb00800af85a3db
 
 dcm2nii -  http://www.nitrc.org/frs/shownotes.php?release_id=2291 - 6/2013
 
