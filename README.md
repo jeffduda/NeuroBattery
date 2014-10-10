@@ -1,29 +1,31 @@
 NeuroBattery
 ============
 
-Here we provide a working example that illustrates the use of Advanced Normalization Tools ([ANTs](https://github.com/stnava/ANTs)) to process multiple MR image types for a single subject. We provide and example input data for a single subject for which a battery of 5 different images were acquired in a single scanning session: 
+Here we provide a working example that illustrates the use of Advanced Normalization Tools ([ANTs](https://github.com/stnava/ANTs)) to process multiple MR image types for a single subject. We provide and example input data for a single subject for which a battery of 4 different images were acquired in a single scanning session:
 
 1. T1 (MPRAGE)
 2. pseudo continuous arterial spin labeling (PCASL)
 3. diffusion weighted/tensor
 4. resting state BOLD
 
-Additionally we provide a template and associated labels & priors that we use as an anatomical basis for processing as well as a set of verified output image to ensure that your version is working correctly. The general concept is to use the anatomical information in the T1 images as a spatial frame-of-reference. Accordingly we find a spatial mapping between each subject's T1 image and the T1 template. Later, for additional MR images, we will perform intra subject alignment to the T1 allowing for mapping to template space by composing multiple transforms and retaining the concept of relying on the T1 images for anatomical reference for both intra and inter subject exploration of the data. After aligning the T1 image to the template we generate various images relating to anatomical properties of the brain. 
+Additionally we provide a template and associated labels & priors that we use as an anatomical basis for processing as well as a set of verified output image to ensure that your version is working correctly. The general concept is to use the anatomical information in the T1 images as a spatial frame-of-reference. Accordingly we find a spatial mapping between each subject's T1 image and the T1 template. Later, for additional MR images, we will perform intra subject alignment to the T1 allowing for mapping to template space by composing multiple transforms and retaining the concept of relying on the T1 images for anatomical reference for both intra and inter subject exploration of the data. After aligning the T1 image to the template we generate various images relating to anatomical properties of the brain.
 
 Getting Started
 ----------------
 
-0. clone this repository and make sure you have R and its ggplot2 and rmarkdown libraries installed
+1. clone this repository and make sure you have R and its ggplot2 and rmarkdown libraries installed
 
-1. install [ANTs](http://stnava.github.io/ANTs/),  [ANTsR](http://stnava.github.io/ANTsR/) and [pipedream](https://github.com/cookpa/pipedream) as described on their respective pages
+2. install [ANTs](http://stnava.github.io/ANTs/),  [ANTsR](http://stnava.github.io/ANTsR/) and [pipedream](https://github.com/cookpa/pipedream) as described on their respective pages
 
-2. cd into NeuroBattery/scripts/
+3. set the PIPEDREAMPATH environment variable to point to the base directory of pipedream
 
-3. type `./run_test.sh`  and then wait for the test to finish.
+4. cd into NeuroBattery/scripts/
 
-4. after processing has finished, the file `NeuroBattery/docs/PEDS012_20131101.pdf will be created. In this file, you will see a variety of measures generated from the results, these number will be compared to a set of reference results provided in NeuroBattery/data/reference/. Small differences ( < 1% ) are to be expected. Larger differences may be a cause of concern.
+5. type `./run_test.sh`  and then wait for the test to finish.
 
-5. if the test succeeds, then great.  now you can inspect both scripts and results and see how to do this yourself.
+6. after processing has finished, the file `NeuroBattery/docs/PEDS012_20131101.pdf will be created. In this file, you will see a variety of measures generated from the results, these number will be compared to a set of reference results provided in NeuroBattery/data/reference/. Small differences ( < 1% ) are to be expected. Larger differences may be a cause of concern.
+
+7. if the test succeeds, then great.  now you can inspect both scripts and results and see how to do this yourself.
 
 Additional information below.
 
@@ -41,7 +43,7 @@ An extraction mask of the template will help extract the brain from the input (`
 ![Full C](https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_sagittal.png?raw=true)
 ![Full C](https://github.com/jeffduda/NeuroBattery/blob/master/figures/template_t1_mask_coronal.png?raw=true)
 
-A brain mask of the template is transformed to subject space for brain extration (`data/template/PTBP/PTBP_T1_BrainCerebellumProbabilityMask.nii.gz`)
+A brain mask of the template is transformed to subject space for brain extraction (`data/template/PTBP/PTBP_T1_BrainCerebellumProbabilityMask.nii.gz`)
 
 Tissue priors in the template will help segment the input data. Red=CSF, Green=Cortex, Blue=White matter, and Yellow=Deep gray matter, X=Brain stem, Y=Cerebellum (`data/template/PTBP/Priors/priors%d.nii.gz`)
 
@@ -69,6 +71,7 @@ In the script directory, `process_t1.sh` provides an example call to `antsCortic
 > -k 1 \
 > -n 3 \
 > -w 0.25 \
+> -q 1 \
 > -o ../data/output/PEDS012/20131101/PEDS012_20131101_
 
 Here are some sample slices from the provided T1 input data (`data/input/PEDS012/20121031/Anatomy/PEDS012_20121031_mprage_t1.nii.gz`) followed by the results provided by `antsCorticalThickness.sh`.
@@ -95,7 +98,7 @@ The cortical thickness, displayed as a heat-map overlay:
 ![Full C](https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1thick_sagittal.png?raw=true)
 ![Full C](https://github.com/jeffduda/NeuroBattery/blob/master/figures/input_t1thick_coronal.png?raw=true)
 
-For quality control, we can visualize the mean cortical thickness within brain regions. The values for this subject are represented by the thick black line, while the red and blue lines represent the values for other subjects (blue=male) from the same dataset. 
+For quality control, we can visualize the mean cortical thickness within brain regions. The values for this subject are represented by the thick black line, while the red and blue lines represent the values for other subjects (blue=male) from the same dataset.
 
 ![Full C](https://github.com/jeffduda/NeuroBattery/blob/master/figures/thickness_spider.png?raw=true)
 
@@ -173,7 +176,7 @@ Whole brain tractography is used to obtain the following set of streamlines
 
 ![Full C](https://github.com/jeffduda/NeuroBattery/blob/master/figures/fibertracts.png?raw=true)
 
-These streamlines are used along with the AAL labels to generate a graph where edges represent the level of connectivity between two labeled regions. 
+These streamlines are used along with the AAL labels to generate a graph where edges represent the level of connectivity between two labeled regions.
 
 ![Full C](https://github.com/jeffduda/NeuroBattery/blob/master/figures/graph.png?raw=true)
 
@@ -221,4 +224,3 @@ cmake 2.8.12.1
 **Whipping up a fury, Dominating flurry**
 
 **We create the Battery**
-
