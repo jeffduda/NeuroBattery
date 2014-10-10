@@ -19,7 +19,7 @@ print( test.location )
 print( gold.location )
 print( outfile )
 
-logdata = data.frame( Machine=Sys.info()[4], User=Sys.info()[8], Platform=sessionInfo()[[1]][1] )
+logdata = data.frame( LogTime=as.character(Sys.time()), Machine=Sys.info()[4][[1]], User=Sys.info()[8][[1]], Platform=sessionInfo()[[1]][1] )
 
 render("comparison.Rmd", output_file=outfile )
 
@@ -28,10 +28,13 @@ outdata = logdata
 if ( !is.na(logfile) ) {
 
   if( file.exists(logfile) ) {
+
     archived = read.csv(logfile)
+    print(dim(archived))
+    print(dim(outdata))
     outdata = rbind(archived, outdata )
     }
 
-  write.csv(outdata, logfile)
+  write.csv(outdata, logfile, row.names=F)
 
 }
