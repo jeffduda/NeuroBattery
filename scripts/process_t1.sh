@@ -9,5 +9,6 @@ sh  ${ANTSPATH}/antsCorticalThickness.sh -d 3 \
    -k 1 \
    -n 3 \
    -w 0.25 \
+   -q 1 \
    -o ../data/output/PEDS012/20131101/PEDS012_20131101_
    
