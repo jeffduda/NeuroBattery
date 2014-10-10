@@ -4,7 +4,7 @@ output: pdf_document
 ---
 
 # Objective
-What is this doing
+Compare results of your local ANTs processing to a set of reference results
 
 ```{r fig.width=8, fig.height=4, echo=FALSE}
 if ( exists("test.location") && exists("gold.location") ) {
@@ -13,7 +13,7 @@ if ( exists("test.location") && exists("gold.location") ) {
   }  else {
   print( "Need to set test.location and gold.location variables" )
   }
-  
+
 ```
 
 # Brain extraction comparison
@@ -28,7 +28,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   mask.test = antsImageRead(mask.test, 3)
   mask.gold = antsImageRead(mask.gold, 3)
-    
+
   bvol.test = length(which(as.array(mask.test)>0))*prod(antsGetSpacing(mask.test))
   bvol.gold = length(which(as.array(mask.gold)>0))*prod(antsGetSpacing(mask.gold))
   bvol.change = abs(bvol.test - bvol.gold) / bvol.gold
@@ -38,17 +38,19 @@ if ( exists("test.location") && exists("gold.location") ) {
   bvol.overlap = length(which(mask.test*mask.gold > 0 ))
   bvol.sum = length(which(mask.test>0))
   bvol.sum = bvol.sum + length(which(mask.gold>0))
- 
- 
+
+
   print(paste("Brain volume (test):", bvol.test))
   print(paste("Brain volume (gold):", bvol.gold))
   print(paste("Brain volume change %", bvol.change))
   print(paste("Brain mask DICE:", 2.0*bvol.overlap / bvol.sum))
-  
+
+  logdata = data.frame(logdata, BrainVolume=bvol.test )
+
   } else {
   print( "Need to set test.location and gold.location variables" )
   }
-  
+
 ```
 
 # Brain segmentation
@@ -64,13 +66,13 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   seg.test = antsImageRead(seg.test, 3)
   seg.gold = antsImageRead(seg.gold, 3)
-  
+
   test.values = rep(0,6)
   gold.values = rep(0,6)
-    
+
   for ( i in c(1:6) ) {
     print( paste("Checking Label:", i, seg.names[i] ))
-    
+
     vol.test = length(which(as.array(seg.test)==i))*prod(antsGetSpacing(seg.test))
     vol.gold = length(which(as.array(seg.gold)==i))*prod(antsGetSpacing(seg.gold))
     vol.change = abs(vol.test - vol.gold) / vol.gold
@@ -81,21 +83,28 @@ if ( exists("test.location") && exists("gold.location") ) {
     mask.test[ mask.test == i] = 1
     mask.gold[ mask.gold != i ] = 0
     mask.gold[ mask.gold == i] = 1
-        
+
     mask.overlap = length(which(mask.test*mask.gold>0))
     mask.sum = length(which(mask.test>0))
     mask.sum = mask.sum + length(which(mask.gold>0))
- 
+
     print(paste("Volume (test):", vol.test))
     print(paste("Volume (gold):", vol.gold))
     print(paste("Volume change %", vol.change))
     print(paste("Volume DICE:", 2.0*mask.overlap / mask.sum))
     print( " " )
-    
+
     test.values[i] = vol.test
     gold.values[i] = vol.gold
 
     }
+
+  logdata = data.frame(logdata, CSF.Volume=test.values[1])
+  logdata = data.frame(logdata, Cortex.Volume=test.values[2])
+  logdata = data.frame(logdata, WhiteMatter.Volume=test.values[3])
+  logdata = data.frame(logdata, DeepGray.Volume=test.values[4])
+  logdata = data.frame(logdata, BrainStem.Volume=test.values[5])
+  logdata = data.frame(logdata, Cerebellum.Volume=test.values[6])
 
   dat = data.frame( Volume=c(test.values, gold.values) )
   dat = data.frame(dat, Cohort=c(rep("Test",6),rep("Gold",6)) )
@@ -105,11 +114,11 @@ if ( exists("test.location") && exists("gold.location") ) {
   segPlot = ggplot( dat, aes(x=Tissue, y=Volume, group=Cohort, colour=Cohort))
   segPlot = segPlot + geom_line() + geom_point()
   print(segPlot)
-  
+
   } else {
   print( "Need to set test.location and gold.location variables" )
   }
-  
+
 ```
 
 Cortical Thickness
@@ -125,7 +134,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   thick.test = as.array(antsImageRead(thick.test, 3))
   thick.gold = as.array(antsImageRead(thick.gold, 3))
-  
+
   mask.test = as.array(seg.test)
   mask.gold = as.array(seg.gold)  
   mask.test[ mask.test != 2 ] = 0
@@ -136,15 +145,17 @@ if ( exists("test.location") && exists("gold.location") ) {
   mean.test = mean( thick.test[mask.test>0] )
   mean.gold = mean( thick.gold[mask.gold>0] )
   mean.change = abs(mean.test-mean.gold)/mean.gold
-  
+
   print(paste("Mean cortical thickness (test):", mean.test))
   print(paste("Mean cortical thickness (gold):", mean.gold))
   print(paste("Mean cortical thickness change %", mean.change))
- 
+
+  logdata = data.frame(logdata, Cortex.MeanThickness=mean.test)
+
   } else {
   print( "Need to set test.location and gold.location variables" )
   }
-  
+
 ```
 
 
@@ -161,7 +172,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   fa.test = as.array(antsImageRead(fa.test, 3))
   fa.gold = as.array(antsImageRead(fa.gold, 3))
-  
+
   mask.test = as.array(seg.test)
   mask.gold = as.array(seg.gold)  
   mask.test[ mask.test != 3 ] = 0
@@ -172,15 +183,17 @@ if ( exists("test.location") && exists("gold.location") ) {
   mean.test = mean( fa.test[mask.test>0] )
   mean.gold = mean( fa.gold[mask.gold>0] )
   mean.change = abs(mean.test-mean.gold)/mean.gold
-  
+
   print(paste("Mean fractional anisotropy (test):", mean.test))
   print(paste("Mean fractional anisotropy (gold):", mean.gold))
   print(paste("Mean fractional anisotropy change %", mean.change))
- 
+
+  logdata = data.frame(logdata, WhiteMatter.MeanFA=mean.test)
+
   } else {
   print( "Need to set test.location and gold.location variables" )
   }
-  
+
 ```
 
 PCASL
@@ -196,7 +209,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   cbf.test = as.array(antsImageRead(cbf.test, 3))
   cbf.gold = as.array(antsImageRead(cbf.gold, 3))
-  
+
   mask.test = as.array(seg.test)
   mask.gold = as.array(seg.gold)  
   mask.test[ mask.test != 2 ] = 0
@@ -207,11 +220,13 @@ if ( exists("test.location") && exists("gold.location") ) {
   mean.test = mean( cbf.test[mask.test>0] )
   mean.gold = mean( cbf.gold[mask.gold>0] )
   mean.change = abs(mean.test-mean.gold)/mean.gold
-  
+
   print(paste("Mean cortical CBF (test):", mean.test))
   print(paste("Mean cortical CBF (gold):", mean.gold))
   print(paste("Mean cortical CBF change %", mean.change))
-  
+
+  logdata = data.frame(logdata, Cortex.MeanCBF=mean.test)
+
   mask.test = as.array(seg.test)
   mask.gold = as.array(seg.gold)  
   mask.test[ mask.test != 4 ] = 0
@@ -222,33 +237,38 @@ if ( exists("test.location") && exists("gold.location") ) {
   mean.test = mean( cbf.test[mask.test>0] )
   mean.gold = mean( cbf.gold[mask.gold>0] )
   mean.change = abs(mean.test-mean.gold)/mean.gold
-  
+
   print(paste("Mean deep CBF (test):", mean.test))
   print(paste("Mean deep CBF (gold):", mean.gold))
   print(paste("Mean deep CBF change %", mean.change))
-  
+
+  logdata = data.frame(logdata, DeepGrey.MeanCBF=mean.test )
+
   motion.glob = glob2rx( "*PCASL_MOCOStatsFramewise.csv")
   motion.test = list.files(path=test.location, recursive=T, full.names=T, pattern=motion.glob)[1]
   motion.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=motion.glob)[1]
 
   motion.test = read.csv(motion.test)
   motion.gold = read.csv(motion.gold)
-  
+
   n = dim(motion.gold)[1]-1
   mean.test = motion.test$Mean[1:n]
   mean.gold = motion.gold$Mean[1:n]
-  
+
   dat = data.frame( Displacement=c(mean.test, mean.gold) )
-    dat = data.frame( dat, Cohort=c(rep("Test",n),rep("Gold",n)) )
+  dat = data.frame( dat, Cohort=c(rep("Test",n),rep("Gold",n)) )
   dat = data.frame( dat, Frame=c(c(1:n),c(1:n)) )
   motionPlot = ggplot( dat, aes(x=Frame, y=Displacement, group=Cohort, colour=Cohort) )
   motionPlot = motionPlot + geom_line() + geom_point()
   print(motionPlot)
- 
+
+  logdata = data.frame(logdata, PCASL.MeanMotion=mean(mean.test) )
+
+
   } else {
   print( "Need to set test.location and gold.location variables" )
   }
-  
+
 ```
 
 BOLD
@@ -264,7 +284,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   bold.test = as.array(antsImageRead(bold.test, 3))
   bold.gold = as.array(antsImageRead(bold.gold, 3))
-  
+
   mask.test = as.array(seg.test)
   mask.gold = as.array(seg.gold)  
   mask.test[ mask.test != 2 ] = 0
@@ -275,11 +295,13 @@ if ( exists("test.location") && exists("gold.location") ) {
   mean.test = mean( bold.test[mask.test>0] )
   mean.gold = mean( bold.gold[mask.gold>0] )
   mean.change = abs(mean.test-mean.gold)/mean.gold
-  
+
   print(paste("Mean cortical BOLD (test):", mean.test))
   print(paste("Mean cortical BOLD (gold):", mean.gold))
   print(paste("Mean cortical BOLD change %", mean.change))
-  
+
+  logdata = data.frame(logdata, Cortex.MeanBOLD=mean.test)
+
   mask.test = as.array(seg.test)
   mask.gold = as.array(seg.gold)  
   mask.test[ mask.test != 4 ] = 0
@@ -290,33 +312,36 @@ if ( exists("test.location") && exists("gold.location") ) {
   mean.test = mean( bold.test[mask.test>0] )
   mean.gold = mean( bold.gold[mask.gold>0] )
   mean.change = abs(mean.test-mean.gold)/mean.gold
-  
+
   print(paste("Mean deep BOLD (test):", mean.test))
   print(paste("Mean deep BOLD (gold):", mean.gold))
   print(paste("Mean deep BOLD change %", mean.change))
-  
+
+  logdata = data.frame(logdata, DeepGrey.MeanBOLD=mean.test)
+
   motion.glob = glob2rx( "*BOLD_MOCOStatsFramewise.csv")
   motion.test = list.files(path=test.location, recursive=T, full.names=T, pattern=motion.glob)[1]
   motion.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=motion.glob)[1]
- 
+
   motion.test = read.csv(motion.test)
   motion.gold = read.csv(motion.gold)
-  
+
   n = dim(motion.gold)[1]-1
   mean.test = motion.test$Mean[1:n]
   mean.gold = motion.gold$Mean[1:n]
-  
+
+  logdata = data.frame(logdata, BOLD.MeanMotion=mean(mean.test))
+
   dat = data.frame( Displacement=c(mean.test, mean.gold) )
     dat = data.frame( dat, Cohort=c(rep("Test",n),rep("Gold",n)) )
   dat = data.frame( dat, Frame=c(c(1:n),c(1:n)) )
   motionPlot = ggplot( dat, aes(x=Frame, y=Displacement, group=Cohort, colour=Cohort) )
   motionPlot = motionPlot + geom_line() + geom_point()
   print(motionPlot)
-  
- 
+
+
   } else {
   print( "Need to set test.location and gold.location variables" )
   }
-  
-```
 
+```
