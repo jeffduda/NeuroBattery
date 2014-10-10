@@ -23,7 +23,7 @@ fi
 source ${PIPEDREAMPATH}/config/pipedream_config.sh
 
 if [ ! -e "${CAMINOPATH}/wdtfit" ]; then
-  echo "CAMINOPATH is not set correctly" 
+  echo "CAMINOPATH is not set correctly"
   exit 1
 fi
 
@@ -50,6 +50,4 @@ fi
 ./process_t1.sh
 ./process_modalities.sh
 ./warp_labels.h PEDS012 20131101
-./run_comparison.R PEDS012 20131101
-
-
+./run_comparison.R PEDS012 20131101 ../docs/logfile.csv
