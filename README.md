@@ -187,7 +187,7 @@ Diffusion tensor values are calculated from the DWI images using the nii2dt.sh s
 
 > sh ${PIPEDREAMPATH}/nii2dt/nii2dt.sh \
 > --dwi ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.nii.gz \
->       ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.nii.gz \
+>       ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0019_DTI_1_1x0_30x1000.nii.gz \
 > --bvals ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.bval \
 >         ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0019_DTI_1_1x0_30x1000.bval \
 > --bvecs ../data/input/PEDS012/20131101/DWI/PEDS012_20131101_0013_DTI_1_1x0_30x1000.bvec \
