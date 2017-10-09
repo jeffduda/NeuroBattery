@@ -6,7 +6,7 @@ output: pdf_document
 # Objective
 Compare results of your local ANTs processing to a set of reference results
 
-```{r fig.width=8, fig.height=4, echo=FALSE}
+```{r varcheck, fig.width=8, fig.height=4, echo=FALSE}
 if ( exists("test.location") && exists("gold.location") ) {
   print(paste("Testing directory:", test.location))
   print(paste("Reference directory: ", gold.location))
@@ -17,8 +17,8 @@ if ( exists("test.location") && exists("gold.location") ) {
 ```
 
 # Brain extraction comparison
-```{r fig.width=8, fig.height=4, echo=FALSE}
-suppressMessages(library(ANTsR))
+```{r brainext, fig.width=8, fig.height=4, echo=FALSE}
+suppressMessages(suppressWarnings(library(ANTsR)))
 library(ggplot2)
 if ( exists("test.location") && exists("gold.location") ) {
 
@@ -54,7 +54,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 ```
 
 # Brain segmentation
-```{r fig.width=8, fig.height=4, echo=FALSE}
+```{r brainseg, fig.width=8, fig.height=4, echo=FALSE}
 suppressMessages(library(ANTsR))
 library(ggplot2)
 seg.names = c("CSF", "Cortex", "White matter", "Deep Gray", "BrainStem", "Cerebellum")
@@ -123,7 +123,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
 Cortical Thickness
 ------------------
-```{r fig.width=8, fig.height=4, echo=FALSE}
+```{r thickness, fig.width=8, fig.height=4, echo=FALSE}
 suppressMessages(library(ANTsR))
 library(ggplot2)
 if ( exists("test.location") && exists("gold.location") ) {
@@ -161,7 +161,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
 DTI
 ---
-```{r fig.width=8, fig.height=4, echo=FALSE}
+```{r dti, fig.width=8, fig.height=4, echo=FALSE}
 suppressMessages(library(ANTsR))
 library(ggplot2)
 if ( exists("test.location") && exists("gold.location") ) {
@@ -198,27 +198,20 @@ if ( exists("test.location") && exists("gold.location") ) {
 
 PCASL
 -----
-```{r fig.width=8, fig.height=4, echo=FALSE}
+```{r pcasl, fig.width=8, fig.height=4, echo=FALSE}
 suppressMessages(library(ANTsR))
 library(ggplot2)
 if ( exists("test.location") && exists("gold.location") ) {
 
-  cbf.glob = glob2rx("*meancbf_anatomical.nii.gz")
+  cbf.glob = glob2rx("*TissueStats.csv")
   cbf.test = list.files(path=test.location, recursive=T, full.names=T, pattern=cbf.glob)[1]
   cbf.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=cbf.glob)[1]
 
-  cbf.test = as.array(antsImageRead(cbf.test, 3))
-  cbf.gold = as.array(antsImageRead(cbf.gold, 3))
+  cbf.test = read.csv(cbf.test, 3)
+  cbf.gold = read.csv(cbf.gold, 3)
 
-  mask.test = as.array(seg.test)
-  mask.gold = as.array(seg.gold)  
-  mask.test[ mask.test != 2 ] = 0
-  mask.test[ mask.test == 2] = 1
-  mask.gold[ mask.gold != 2 ] = 0
-  mask.gold[ mask.gold == 2] = 1
-
-  mean.test = mean( cbf.test[mask.test>0] )
-  mean.gold = mean( cbf.gold[mask.gold>0] )
+  mean.test = cbf.test$Mean[cbf.test$LabelValue==2]
+  mean.gold = cbf.gold$Mean[cbf.gold$LabelValue==2]
   mean.change = abs(mean.test-mean.gold)/mean.gold
 
   print(paste("Mean cortical CBF (test):", mean.test))
@@ -227,15 +220,8 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   logdata = data.frame(logdata, Cortex.MeanCBF=mean.test)
 
-  mask.test = as.array(seg.test)
-  mask.gold = as.array(seg.gold)  
-  mask.test[ mask.test != 4 ] = 0
-  mask.test[ mask.test == 4] = 1
-  mask.gold[ mask.gold != 4 ] = 0
-  mask.gold[ mask.gold == 4] = 1
-
-  mean.test = mean( cbf.test[mask.test>0] )
-  mean.gold = mean( cbf.gold[mask.gold>0] )
+  mean.test = cbf.test$Mean[cbf.test$LabelValue==4]
+  mean.gold = cbf.gold$Mean[cbf.gold$LabelValue==4]
   mean.change = abs(mean.test-mean.gold)/mean.gold
 
   print(paste("Mean deep CBF (test):", mean.test))
@@ -244,25 +230,25 @@ if ( exists("test.location") && exists("gold.location") ) {
 
   logdata = data.frame(logdata, DeepGrey.MeanCBF=mean.test )
 
-  motion.glob = glob2rx( "*PCASL_MOCOStatsFramewise.csv")
-  motion.test = list.files(path=test.location, recursive=T, full.names=T, pattern=motion.glob)[1]
-  motion.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=motion.glob)[1]
+  #motion.glob = glob2rx( "*PCASL_MOCOStatsFramewise.csv")
+  #motion.test = list.files(path=test.location, recursive=T, full.names=T, pattern=motion.glob)[1]
+  #motion.gold = list.files(path=gold.location, recursive=T, full.names=T, pattern=motion.glob)[1]
 
-  motion.test = read.csv(motion.test)
-  motion.gold = read.csv(motion.gold)
+  #motion.test = read.csv(motion.test)
+  #motion.gold = read.csv(motion.gold)
 
-  n = dim(motion.gold)[1]-1
-  mean.test = motion.test$Mean[1:n]
-  mean.gold = motion.gold$Mean[1:n]
+  #n = dim(motion.gold)[1]-1
+  #mean.test = motion.test$Mean[1:n]
+  #mean.gold = motion.gold$Mean[1:n]
 
-  dat = data.frame( Displacement=c(mean.test, mean.gold) )
-  dat = data.frame( dat, Cohort=c(rep("Test",n),rep("Gold",n)) )
-  dat = data.frame( dat, Frame=c(c(1:n),c(1:n)) )
-  motionPlot = ggplot( dat, aes(x=Frame, y=Displacement, group=Cohort, colour=Cohort) )
-  motionPlot = motionPlot + geom_line() + geom_point()
-  print(motionPlot)
+  #dat = data.frame( Displacement=c(mean.test, mean.gold) )
+  #dat = data.frame( dat, Cohort=c(rep("Test",n),rep("Gold",n)) )
+  #dat = data.frame( dat, Frame=c(c(1:n),c(1:n)) )
+  #motionPlot = ggplot( dat, aes(x=Frame, y=Displacement, group=Cohort, colour=Cohort) )
+  #motionPlot = motionPlot + geom_line() + geom_point()
+  #print(motionPlot)
 
-  logdata = data.frame(logdata, PCASL.MeanMotion=mean(mean.test) )
+  #logdata = data.frame(logdata, PCASL.MeanMotion=mean(mean.test) )
 
 
   } else {
@@ -273,7 +259,7 @@ if ( exists("test.location") && exists("gold.location") ) {
 
 BOLD
 ----
-```{r fig.width=8, fig.height=4, echo=FALSE}
+```{r bold, fig.width=8, fig.height=4, echo=FALSE}
 suppressMessages(library(ANTsR))
 library(ggplot2)
 if ( exists("test.location") && exists("gold.location") ) {
